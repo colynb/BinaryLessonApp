@@ -1,188 +1,34 @@
-import { Card, CardContent, CardHeader } from "./components/ui/card";
-import { useEffect, useState } from "react";
-
+import { Board } from "./components/board";
 import { Button } from "./components/ui/button";
-import ConfettiExplosion from "react-confetti-explosion";
-import { Switch } from "./components/ui/switch";
+import { ModeToggle } from "./components/mode-toggle";
+import { ThemeProvider } from "@/components/theme-provider";
 
 function App() {
-  const [binaryInputs, setBinaryInputs] = useState([
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
-  const binaryValues = [128, 64, 32, 16, 8, 4, 2, 1];
-  const [target, setTarget] = useState(0);
-  const [hint, setHint] = useState(false);
-  const [score, setScore] = useState(0);
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    generateNewTarget();
-  }, []);
-
-  const randomSuccessMessage = () => {
-    const messages = [
-      "Well done!",
-      "Great job!",
-      "You're a natural!",
-      "You're a genius!",
-      "You're on fire!",
-      "You're unstoppable!",
-      "You're unbeatable!",
-      "You're a star!",
-      "You're a winner!",
-      "You're a champion!",
-    ];
-    return messages[Math.floor(Math.random() * messages.length)];
-  };
-
-  const randomErrorMessage = () => {
-    const messages = [
-      "Not quite. Keep trying!",
-      "Nice try! Keep going!",
-      "You're almost there!",
-      "You're so close!",
-      "You're getting warmer!",
-      "You're getting closer!",
-      "You're almost there!",
-    ];
-
-    return messages[Math.floor(Math.random() * messages.length)];
-  };
-
-  const submit = () => {
-    const decimal = calculateDecimal();
-    if (decimal === target) {
-      setMessage(randomSuccessMessage());
-      setScore(score + 1);
-      setTimeout(generateNewTarget, 1500);
-    } else {
-      setScore(score - 1);
-      setMessage(randomErrorMessage());
-      setTimeout(() => {
-        setMessage("");
-      }, 1500);
-    }
-  };
-
-  const toggleBit = (index: number) => {
-    const newInputs = [...binaryInputs];
-    newInputs[index] = !newInputs[index];
-    setBinaryInputs(newInputs);
-  };
-
-  const calculateDecimal = () => {
-    return binaryInputs.reduce(
-      (sum, bit, index) => sum + (bit ? binaryValues[index] : 0),
-      0
-    );
-  };
-
-  const generateNewTarget = () => {
-    setTarget(Math.floor(Math.random() * 256));
-    setBinaryInputs([false, false, false, false, false, false, false, false]);
-    setMessage("");
-  };
-
-  const guess = calculateDecimal();
   return (
-    <div className="h-screen w-full bg-gray-300 flex-centered">
-      {score >= 5 && score % 5 === 0 && (
-        <ConfettiExplosion
-          className="absolute top-0 translate-x-1/2 w-full h-full"
-          particleCount={score * 10}
-          duration={score + 2200}
-          particleSize={score + 12}
-        />
-      )}
-      <Card className="w-full max-w-lg relative">
-        <div
-          className={`absolute top-0 left-0 p-6 ${
-            score < 0 && "text-destructive"
-          }`}
-        >
-          Score: {score}
-        </div>
-        <div className="absolute top-0 right-0 p-6">
-          <Button
-            size={"sm"}
-            variant={hint ? "default" : "outline"}
-            className="px-2 py-0 h-auto"
-            onClick={() => setHint(!hint)}
-          >
-            Help
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <div className="h-screen w-full flex-centered">
+        <div className="absolute top-0 right-0 p-4 flex items-center gap-4">
+          <ModeToggle />
+          <Button asChild variant={"outline"} size={"icon"}>
+            <a href="https://github.com/colynb/BinaryLessonApp">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="24"
+                height="24"
+                viewBox="0 0 30 30"
+                className="fill-current"
+              >
+                <path d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051 c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526 c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769 c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098 c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9 c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594 c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734 c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z"></path>
+              </svg>
+              <span className="sr-only">View on GitHub</span>
+            </a>
           </Button>
         </div>
-        <CardHeader>
-          <h1 className="font-semibold text-xl text-center">Binary Helper</h1>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className={`mb-4 text-center`}>
-            <div className="text-xl font-bold">Target: {target}</div>
-            <div className="text-base font-normal">
-              Guess: {hint ? guess : <span className="text-gray-400">--</span>}
-            </div>
-          </div>
-          <div className="grid grid-cols-8 border rounded h-24 divide-x">
-            {binaryValues.map((value, index) => (
-              <div key={index} className="grid grid-rows-2 pt-2 pb-6">
-                <span className="text-sm text-center flex-centered">
-                  {hint ? value : <span className="text-gray-400">--</span>}
-                </span>
-                <div className="relative flex-centered">
-                  <Switch
-                    checked={binaryInputs[index]}
-                    onCheckedChange={() => toggleBit(index)}
-                    className="data-[state=checked]:bg-green-500 rotate-[-90deg]"
-                    aria-label={`Toggle bit ${value}`}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-8 border rounded divide-x">
-            <div className="flex-centered p-2">
-              {binaryInputs[0] ? "1" : "0"}
-            </div>
-            <div className="flex-centered p-2">
-              {binaryInputs[1] ? "1" : "0"}
-            </div>
-            <div className="flex-centered p-2">
-              {binaryInputs[2] ? "1" : "0"}
-            </div>
-            <div className="flex-centered p-2">
-              {binaryInputs[3] ? "1" : "0"}
-            </div>
-            <div className="flex-centered p-2">
-              {binaryInputs[4] ? "1" : "0"}
-            </div>
-            <div className="flex-centered p-2">
-              {binaryInputs[5] ? "1" : "0"}
-            </div>
-            <div className="flex-centered p-2">
-              {binaryInputs[6] ? "1" : "0"}
-            </div>
-            <div className="flex-centered p-2">
-              {binaryInputs[7] ? "1" : "0"}
-            </div>
-          </div>
-          <h3 className="text-lg font-medium text-center h-4">
-            {message || ""}
-          </h3>
-
-          <Button className="w-full" onClick={submit}>
-            Submit Answer
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+        <Board />
+      </div>
+    </ThemeProvider>
   );
 }
 
