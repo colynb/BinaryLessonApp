@@ -21,6 +21,7 @@ export function Board() {
   const [hint, setHint] = useState(false);
   const [score, setScore] = useState(0);
   const [message, setMessage] = useState("");
+  const [confetti, setConfetti] = useState(false);
 
   useEffect(() => {
     generateNewTarget();
@@ -60,14 +61,18 @@ export function Board() {
     const decimal = calculateDecimal();
     if (decimal === target) {
       setMessage(randomSuccessMessage());
-      setScore(score + 1);
+      const newScore = score + 1;
+      setScore(newScore);
       setTimeout(generateNewTarget, 1500);
+      console.log(newScore >= 5, newScore % 5 === 0);
+      setConfetti(newScore >= 5 && newScore % 5 === 0);
     } else {
       setScore(score - 1);
       setMessage(randomErrorMessage());
       setTimeout(() => {
         setMessage("");
       }, 1500);
+      setConfetti(false);
     }
   };
 
@@ -93,7 +98,7 @@ export function Board() {
   const guess = calculateDecimal();
   return (
     <>
-      {score >= 5 && score % 5 === 0 && (
+      {confetti && (
         <ConfettiExplosion
           className="absolute top-0 translate-x-1/2 w-full h-full"
           particleCount={score * 10}
